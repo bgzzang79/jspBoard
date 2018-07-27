@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+	<select id="selectAllBoard" resultType="boardVo">
+		select *
+			from board
+		order by brd_num
+	</select>
+	
+	<select id="selectYBoard" resultType="boardVo">
+		select *
+			from board
+		where brd_yn='y'
+		order by brd_num
+	</select>
+	
+	<update id="updateYN" parameterType="boardVo">
+		UPDATE board
+			SET brd_yn=#{brd_yn}
+		WHERE brd_num=#{brd_num}
+	</update>
+	
+	<insert id="addBoard" parameterType="boardVo">
+		INSERT INTO board
+			VALUES(board_seq2.nextval,#{brd_name},#{brd_yn})
+ 	</insert>
+ 	
+ 	<select id="getBoard" parameterType="Integer" resultType="boardVo">
+ 		select *
+ 			from board
+ 		where brd_num=#{brd_num}
+ 	</select>
+</mapper>

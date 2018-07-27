@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="post">
+	<select id="getNumPost" parameterType="Integer" resultType="postVo">
+		
+		
+		SELECT pt_num
+			   ,id
+			   ,brd_num
+			   ,pt_content
+			   ,pt_delyn
+			   ,DECODE(pt_pnum,null, LPAD('　',level*4,'　') ||  post.pt_title, LPAD('└',level*4,'　') ||  post.pt_title) as pt_title
+			   ,pt_writer			   
+			   ,pt_date
+			   ,pt_pnum
+			   ,pt_gno
+		FROM post
+		  WHERE brd_num=#{brd_num}		  	
+		START WITH pt_pnum is null
+		CONNECT BY PRIOR pt_num = pt_pnum
+		ORDER SIBLINGS BY pt_date DESC,pt_gno
+		
+<!-- 		SELECT * -->
+<!-- 			FROM -->
+<!-- 				(SELECT a.*, ROWNUM rn -->
+<!-- 				FROM (SELECT pt_num -->
+<!-- 				   ,id -->
+<!-- 				   ,brd_num -->
+<!-- 				   ,pt_content -->
+<!-- 				   ,pt_delyn -->
+<!-- 				   ,DECODE(pt_pnum,null, LPAD('　',level*4,'　') ||  post.pt_title, LPAD('└',level*4,'　') ||  post.pt_title) as pt_title -->
+<!-- 				   ,pt_writer			    -->
+<!-- 				   ,pt_date -->
+<!-- 				   ,pt_pnum -->
+<!-- 				   ,pt_gno -->
+<!-- 			FROM post -->
+<!-- 			  WHERE brd_num=#{brd_num} -->
+<!-- 			START WITH pt_pnum is null -->
+<!-- 			CONNECT BY PRIOR pt_num = pt_pnum -->
+<!-- 			ORDER SIBLINGS BY pt_date DESC,pt_gno) a) -->
+<!-- 			WHERE rn BETWEEN (#{page}-1)*#{pagesize}+1 AND #{page}*#{pagesize} -->
+		
+	</select>
+	
+	<insert id="addPost" parameterType="postVo">
+		INSERT INTO post
+			VALUES(
+					post_seq.nextval
+			  	    ,#{id}
+			  	    ,#{brd_num}
+			  	    ,post_seq.nextval
+			  	    ,#{pt_title}
+			  	    ,#{pt_content}
+			  	    ,SYSDATE
+			  	    ,null
+			  	    ,#{pt_writer}
+			  	    ,'y'
+			  	  )
+	</insert>
+	
+	<select id="getPtNumPost" parameterType="Integer" resultType="postVo">
+		SELECT *
+			FROM post
+		WHERE pt_num=#{pt_num}
+	</select>
+	
+	<update id="updatePost" parameterType="postVo">
+		UPDATE post
+			SET pt_title=#{pt_title}
+				,pt_content=#{pt_content}
+		WHERE pt_num=#{pt_num}
+	</update>
+	
+<!-- 	<update id="deletePost" parameterType="postVo">	 -->
+<!-- 		UPDATE post -->
+<!-- 			SET pt_delyn='n' -->
+<!-- 		WHERE pt_num=#{pt_num}		 -->
+<!-- 	</update> -->
+</mapper>
